@@ -27,18 +27,16 @@
 // --- TUNING PARAMETERS ---
 
 // PID Constants for Analog Error Calculation
-// KP: Proportional gain. This is the main tuning parameter. 
-//     Start with this value (e.g., 20-40). Decrease if the robot oscillates wildly.
-//     Increase if the robot is sluggish and doesn't correct enough.
-#define KP 30.0 
-
-// KI: Integral gain. Helps correct for steady-state error. 
-//     Keep at 0.0 for now. Only add a very small value (e.g., 0.01) if the bot consistently stays slightly off-center on straight lines.
+#define KP 45.0 
 #define KI 0.0
+#define KD 100.0
 
-// KD: Derivative gain. Dampens oscillations and smooths corrections.
-//     Start with a value around KP * 2. Increase if the robot overshoots turns, decrease if it's too sluggish to react.
-#define KD 60.0
+// Anti-windup clamp for Integral (used if KI > 0)
+#define INTEGRAL_MAX 1000 
+
+// Proportional gain for straight-line encoder PID
+// Tune this to make the robot drive straight in forwardEncoderPID
+#define K_STRAIGHT 0.5
 
 // SPEEDS (0-255)
 #define BASE_SPEED 100
@@ -46,15 +44,11 @@
 #define TURN_SPEED 100
 
 // MOTOR TRIM
-// Adjust this value to make the robot drive straight.
-// Positive values slow down the right motor, negative values slow down the left.
-// Range: -50 to 50
 #define MOTOR_TRIM 0
 
-// ENCODER TICKS (Calibrated Values)
-#define TICKS_FOR_90_DEG_TURN 240
-#define TICKS_FOR_180_DEG_TURN 480
-#define TICKS_SENSORS_TO_AXLE 300
+// ENCODER TICKS (Your Calibrated Values)
+#define TICKS_FOR_90_DEG_TURN 230
+#define TICKS_FOR_180_DEG_TURN 460  // (2 * 230)
+#define TICKS_SENSORS_TO_AXLE 235
 
 #endif
-

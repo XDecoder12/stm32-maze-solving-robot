@@ -423,8 +423,13 @@ void solveMaze() {
         readSensorsDigital();
         bool can_go_left = sensor_digital[0] || sensor_digital[1];
         bool can_go_right = sensor_digital[NUM_SENSORS - 2] || sensor_digital[NUM_SENSORS - 1];
+        // --- NEW FIX ---
+        // bool can_go_left = sensor_digital[0] || sensor_digital[1] || sensor_digital[2];
+        // bool can_go_right = sensor_digital[5] || sensor_digital[6] || sensor_digital[7];
 
-        long peek_ticks = TICKS_SENSORS_TO_AXLE / 2;
+        //long peek_ticks = TICKS_SENSORS_TO_AXLE / 2;
+        // --- NEW FIX ---
+        long peek_ticks = TICKS_SENSORS_TO_AXLE / 3;
         forwardEncoderPID(BASE_SPEED, peek_ticks); 
         stopMotors();
         delay(50); 

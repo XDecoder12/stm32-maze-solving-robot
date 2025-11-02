@@ -1,7 +1,7 @@
 #include "config.h"
 
 // --- DEBUGGING ---
-#define DEBUG 0
+#define DEBUG 1
 
 // --- Global Variables ---
 uint16_t sensor_pins[NUM_SENSORS] = {SENSOR_8_PIN, SENSOR_7_PIN, SENSOR_6_PIN, SENSOR_5_PIN, SENSOR_4_PIN, SENSOR_3_PIN, SENSOR_2_PIN, SENSOR_1_PIN};
@@ -268,8 +268,8 @@ void pidControl(int base_speed) {
 
     motor_speed_correction = (KP * error) + (KI * integral) + (KD * derivative);
 
-    int left_speed = base_speed - motor_speed_correction;
-    int right_speed = base_speed + motor_speed_correction;
+    int left_speed = base_speed + motor_speed_correction;
+    int right_speed = base_speed - motor_speed_correction;
 
     #if DEBUG
     static unsigned long lastPidPrint = 0;

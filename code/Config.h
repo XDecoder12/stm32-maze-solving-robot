@@ -28,12 +28,12 @@
 // --- TUNING PARAMETERS ---
 
 // PID Constants for Analog Error Calculation
-#define KP_TRIAL 45.0 
+#define KP_TRIAL 40.0 //45.0 
 #define KI 0.0
-#define KD_TRIAL 67.5
+#define KD_TRIAL 165.89 //67.5
 
-#define KP_FAST 60.0 //70.0 x
-#define KD_FAST 50.0
+#define KP_FAST 80.0 //60.0 //70.0 x
+#define KD_FAST 410.0 //406.35 //50.0
 
 // Anti-windup clamp for Integral (used if KI > 0)
 #define INTEGRAL_MAX 1000 
@@ -42,19 +42,19 @@
 #define K_STRAIGHT 0.5
 
 // SPEEDS (0-255)
-#define BASE_SPEED 100 //120
-#define FAST_SPEED 110 //150 //130
-#define TURN_SPEED 100
+#define BASE_SPEED 130 //130 //100
+#define FAST_SPEED 255 //200 //110 //130
+#define TURN_SPEED 80 //90
 
-#define FAST_TURN_SPEED 90 //110
+#define FAST_TURN_SPEED 60 //70 //110
 
 // MOTOR TRIM
 #define MOTOR_TRIM 0
 
 // ENCODER TICKS (Your Calibrated Values)
-#define TICKS_FOR_90_DEG_TURN 255 //230
-#define TICKS_FOR_180_DEG_TURN 500 //460  // (2 * 230)
-#define TICKS_SENSORS_TO_AXLE 250 //235
+#define TICKS_FOR_90_DEG_TURN 255 //240
+#define TICKS_FOR_180_DEG_TURN 510 //480
+#define TICKS_SENSORS_TO_AXLE 250 //155.56 //250 //235
 
 #define FAST_TICKS_SENSORS_TO_AXLE 130 //200 //210
 

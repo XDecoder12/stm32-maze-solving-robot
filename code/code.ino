@@ -71,8 +71,8 @@ void setup() {
     pinMode(MOTOR_B_PWM, PWM);
     
     for (int i = 0; i < NUM_SENSORS; i++) {
-        sensor_min[i] = 4095; // Assuming 12-bit ADC
-        sensor_max[i] = 0;
+        sensor_min[i] = 0; // Assuming 12-bit ADC
+        sensor_max[i] = 4095;
     }
 
     pinMode(LEFT_ENCODER_A, INPUT_PULLUP);
@@ -173,18 +173,35 @@ void readSensorsAnalog() {
 void calibrateSensors() {
     left_encoder_ticks = 0;
     right_encoder_ticks = 0;
-
     motorControl(TURN_SPEED, -TURN_SPEED); 
-    for (int i = 0; i < 2; i++) {
-        // Calibrate by rotating 360 degrees (2 * 180)
-        long start_ticks = (left_encoder_ticks + right_encoder_ticks) / 2;
-        while( (left_encoder_ticks + right_encoder_ticks) / 2 - start_ticks < (TICKS_FOR_180_DEG_TURN * 2) ) {
+    //long start_ticks = (left_encoder_ticks + right_encoder_ticks) / 2;
+    while( (left_encoder_ticks + right_encoder_ticks) / 2 < (TICKS_FOR_180_DEG_TURN / 3) ) {
             readSensorsAnalog();
-            for (int k = 0; k < NUM_SENSORS; k++) {
-                // --- Typo Fix ---
-                if (sensor_values[k] < sensor_min[k]) sensor_min[k] = sensor_values[k];
-                if (sensor_values[k] > sensor_max[k]) sensor_max[k] = sensor_values[k];
-            }
+        for (int k = 0; k < NUM_SENSORS; k++) {
+            if (sensor_values[k] < sensor_min[k]) sensor_min[k] = sensor_values[k];
+            if (sensor_values[k] > sensor_max[k]) sensor_max[k] = sensor_values[k];
+        }
+    }
+
+    left_encoder_ticks = 0;
+    right_encoder_ticks = 0;
+    motorControl(-TURN_SPEED, TURN_SPEED);
+    while( (left_encoder_ticks + right_encoder_ticks) / 2 < ((TICKS_FOR_180_DEG_TURN / 3))*2 ) {
+        readSensorsAnalog();
+        for (int k = 0; k < NUM_SENSORS; k++) {
+            if (sensor_values[k] < sensor_min[k]) sensor_min[k] = sensor_values[k];
+            if (sensor_values[k] > sensor_max[k]) sensor_max[k] = sensor_values[k];
+        }
+    }
+
+    left_encoder_ticks = 0;
+    right_encoder_ticks = 0;
+    motorControl(TURN_SPEED, -TURN_SPEED);
+    while( (left_encoder_ticks + right_encoder_ticks) / 2 < (TICKS_FOR_180_DEG_TURN / 3) ) {
+        readSensorsAnalog();
+        for (int k = 0; k < NUM_SENSORS; k++) {
+            if (sensor_values[k] < sensor_min[k]) sensor_min[k] = sensor_values[k];
+            if (sensor_values[k] > sensor_max[k]) sensor_max[k] = sensor_values[k];
         }
     }
     stopMotors();
@@ -243,6 +260,7 @@ float calculateError() {
         if (sensor_digital[i]) {
             if (sensor_thresholds[i] > sensor_min[i]) {
                  activation = (float)(sensor_thresholds[i] - sensor_values[i]) / (sensor_thresholds[i] - sensor_min[i]);
+                 //if (activation > 1.0) activation = 1.0;
             } else {
                  activation = 1.0;
             }
@@ -279,7 +297,7 @@ void pidControl(int base_speed) {
     motor_speed_correction = (current_kp * error) + (KI * integral) + (current_kd * derivative);
 
     // --- LOGIC FIX ---
-    // This is the corrected turning direction.
+    // This is the corrected turning direction.(FOR MY BOT SPECIFICALLY)
     // Positive error (line left) -> positive correction -> speed up left motor
     int left_speed = base_speed + motor_speed_correction;
     int right_speed = base_speed - motor_speed_correction;
@@ -350,7 +368,7 @@ void turnLeft() {
     right_encoder_ticks = 0;
     motorControl(TURN_SPEED, -TURN_SPEED);
 
-    long min_turn_ticks = TICKS_FOR_90_DEG_TURN * 0.65; //0.7
+    long min_turn_ticks = TICKS_FOR_90_DEG_TURN * 0.9; //0.65 //0.7
     while( (left_encoder_ticks + right_encoder_ticks) / 2 < min_turn_ticks);
 
     while( (left_encoder_ticks + right_encoder_ticks) / 2 < TICKS_FOR_90_DEG_TURN) {
@@ -394,7 +412,7 @@ void turnRight() {
     right_encoder_ticks = 0;
     motorControl(-TURN_SPEED, TURN_SPEED);
 
-    long min_turn_ticks = TICKS_FOR_90_DEG_TURN * 0.65; //0.7
+    long min_turn_ticks = TICKS_FOR_90_DEG_TURN * 0.9; //0.65 //0.7
     while( (left_encoder_ticks + right_encoder_ticks) / 2 < min_turn_ticks);
 
     while( (left_encoder_ticks + right_encoder_ticks) / 2 < TICKS_FOR_90_DEG_TURN) {
@@ -438,12 +456,13 @@ void turnAround() {
     right_encoder_ticks = 0;
     motorControl(-TURN_SPEED, TURN_SPEED);
 
-    long min_turn_ticks = TICKS_FOR_180_DEG_TURN * 0.4; //0.6
+    long min_turn_ticks = TICKS_FOR_180_DEG_TURN * 0.3; //0.9 //0.4 //0.6
+    
     while( (left_encoder_ticks + right_encoder_ticks) / 2 < min_turn_ticks);
     
     while( (left_encoder_ticks + right_encoder_ticks) / 2 < TICKS_FOR_180_DEG_TURN) {
         readSensorsDigital();
-        if (sensor_digital[3] || sensor_digital[4]) {
+        if (sensor_digital[3] && sensor_digital[4]) { //||
             #if DEBUG
             Serial.print("Line detected early in 180 turn at ");
             Serial.print((left_encoder_ticks + right_encoder_ticks) / 2);
@@ -482,15 +501,20 @@ void solveMaze() {
     while (!goal_reached) {
         followSegment(BASE_SPEED);
 
+        //these 2 lines literally fucked my life
+        stopMotors();
+        delay(50);        
+
+
         readSensorsDigital();
         bool can_go_left = sensor_digital[0] || sensor_digital[1];
         bool can_go_right = sensor_digital[6] || sensor_digital[7];
 
-        // --- T-JUNCTION FIX: Shorten the peek to 1/3 ---
-        long peek_ticks = TICKS_SENSORS_TO_AXLE / 3; //2 x
+        //long peek_ticks = TICKS_SENSORS_TO_AXLE / 3; //2 x
+        long peek_ticks = 60; //80
         forwardEncoderPID(BASE_SPEED, peek_ticks);
         stopMotors();
-        delay(50); //50 //150 x
+        delay(50); //150 x
 
         readSensorsDigital();
         int new_sensor_count = 0;
@@ -509,6 +533,8 @@ void solveMaze() {
         bool can_go_straight = sensor_digital[3] || sensor_digital[4];
         
         long remaining_ticks = TICKS_SENSORS_TO_AXLE - peek_ticks;
+        //new
+        if (remaining_ticks < 0) remaining_ticks = 0;
         
         if (can_go_left) {
             #if DEBUG
@@ -548,7 +574,13 @@ void solveMaze() {
             Serial.println("Decision: Dead End, Turn Around");
             #endif
             path[path_length++] = 'B';
+
+            stopMotors();
+            //new
+            if (remaining_ticks > 0) forwardEncoderPID(BASE_SPEED, remaining_ticks);
+
             turnAround();
+
         }
     }
     stopMotors();

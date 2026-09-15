@@ -5,7 +5,8 @@ Meshmerize is a high-performance autonomous robot designed to navigate complex 9
 ## Features
 
 * **High-Speed Processing:** Powered by the 32-bit ARM Cortex-M3 (STM32) for faster reaction times compared to standard Arduino boards.
-* **Maze Solving Algorithm:** Implements the Left-Hand Rule to navigate unknown mazes and finding the shortest path (optional implementation).
+* **Maze Solving Algorithm:** Implements the Left-Hand Rule to navigate and solve 90-degree mazes.
+* **Path Optimization:** Records turns during the initial run to allow a more efficient second traversal.
 * **Precision Motor Control:** Uses the TB6612FNG driver for efficient and granular control of DC motors.
 * **8-Sensor Array:** RLS08 array allows for smooth line following using weighted averages or PID control.
 
@@ -43,7 +44,7 @@ Connects to the STM32 to control speed (PWM) and direction (Logic High/Low).
 
 * Motor B (Left Motor)
     * PWM Speed: PB7
-    * Input 1: PB
+    * Input 1: PB14
     * Input 2: PB15
 
 * Driver Power & Logic
@@ -82,11 +83,11 @@ This is a left-wall-following algorithm used to solve mazes:
 * Right: If no left or straight, turn right.
 * Dead End: If no paths are available, turn around (U-turn).
 
-The robot stores these turns in memory to optimize the path on the second run (Shortest Path logic which it decides only based on the paths it traversed in the first run).
+The robot stores the turns encountered during the first run and uses them to make a more efficient second traversal.
 
-BUT STILL ONE OF THE MAIN LIMITATION OF THIS BOT IS THAT IT DOESN'T COVER THE TRUE SHORTEST PATH OF THE COMPLETE MAZE FOR WHICH WE NEED TO IMPLEMENT AND USE DIFFERENT ALGORITHMS, WHICH I WILL TRY TO IMPLEMENT AND UPDATE HERE WHENEVER I DO IT PROPERLY.
+> **Current limitation:** The current implementation does not guarantee the globally shortest path through the maze. Future versions could use graph-based path-planning algorithms to find an optimal route.
 
-## 💻 Software & Setup
+## Software & Setup
 
 The project is coded in C++ using the **Arduino IDE**.
 
@@ -111,7 +112,7 @@ git clone https://github.com/XDecoder12/stm32-maze-solving-robot.git
     * Upload Method: STLink (if using dongle) or Serial (if using FTDI).
 4. Connect your STM32 and hit Upload.
 
-## ⚙️ Calibration & Tuning
+## Calibration & Tuning
 
 Before running the maze, you must calibrate the sensors for your specific environment (lighting conditions).
 

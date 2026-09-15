@@ -2,14 +2,14 @@
 
 Meshmerize is a high-performance autonomous robot designed to navigate complex 90-degree mazes and track lines with precision. Built around the powerful STM32F103C8T6 (Blue Pill) microcontroller, it utilizes an 8-channel IR sensor array and implements the Left-Hand Rule (LSR) algorithm to solve mazes.
 
-## 🚀 Features
+## Features
 
 * **High-Speed Processing:** Powered by the 32-bit ARM Cortex-M3 (STM32) for faster reaction times compared to standard Arduino boards.
 * **Maze Solving Algorithm:** Implements the Left-Hand Rule to navigate unknown mazes and finding the shortest path (optional implementation).
 * **Precision Motor Control:** Uses the TB6612FNG driver for efficient and granular control of DC motors.
 * **8-Sensor Array:** RLS08 array allows for smooth line following using weighted averages or PID control.
 
-## 🛠️ Hardware Components
+## Hardware Components
 
 Here is the list of materials used in this project:
 
@@ -23,7 +23,7 @@ Here is the list of materials used in this project:
 * **Battery:** 2x Rechargable 600mAh 3.7V Batteries
 * **Switch:** 1x regular on and off switch
 
-## 🔌 Circuit & Wiring (Need not to be exactly same as here)
+## Circuit & Wiring (Need not to be exactly same as here)
 
 Understanding the connections is crucial for replication. Below is the pin mapping used.
 
@@ -65,7 +65,7 @@ Used for status indication and initiating calibration.
 
 *(Note: Adjust pin numbers in config.h if your wiring differs.)*
 
-## 🧠 The Logic: How It Works
+## The Logic: How It Works
 
 1. Line Detection
 
@@ -100,7 +100,10 @@ The project is coded in C++ using the **Arduino IDE**.
 
 ## Installation:
 
-1. Clone this repository by pasting the given command in your terminal or gitbash 'git clone https://github.com/your-username/meshmerize.git'
+1. Clone this repository by pasting the given command in your terminal or gitbash 
+```bash 
+git clone https://github.com/XDecoder12/stm32-maze-solving-robot.git
+```
 2. Open just_code.ino in Arduino IDE
 3. Board Settings:
     * Board: Generic STM32F1 series

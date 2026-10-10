@@ -24,10 +24,10 @@ A compact, custom-built robot that follows lines, explores mazes and simplifies 
 ## Gallery
 
 <div align="center">
-<img src="images_videos/IMG_0701.png" alt="Top of Meshmerize robot" width="48%"> <img src="images_videos/IMG_0703.png" alt="Underside of Meshmerize robot" width="48%">
+<img src="images_videos/optimized/IMG_0701.webp" alt="Top of Meshmerize robot" width="48%"> <img src="images_videos/optimized/IMG_0703.webp" alt="Underside of Meshmerize robot" width="48%">
 </div>
 
-<p align="center"><img src="images_videos/IMG_0704.png" alt="Side of Meshmerize robot" width="70%"></p>
+<p align="center"><img src="images_videos/optimized/IMG_0704.webp" alt="Side of Meshmerize robot" width="70%"></p>
 
 [Demo video](images_videos/demo_video.mov) · [Wiring schematic](images_videos/Schematics%20Image.jpeg)
 

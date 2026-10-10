@@ -1,140 +1,115 @@
-# 🏎️ Meshmerize: STM32 Maze-Solving Robot
+<div align="center">
 
-Meshmerize is a high-performance autonomous robot designed to navigate complex 90-degree mazes and track lines with precision. Built around the powerful STM32F103C8T6 (Blue Pill) microcontroller, it utilizes an 8-channel IR sensor array and implements the Left-Hand Rule (LSR) algorithm to solve mazes.
+# MESHMЕRIZE
+### STM32 Autonomous Maze-Solving Robot
 
-## Features
+**8-channel IR sensing · PID steering · Encoder feedback · Maze exploration**
 
-* **High-Speed Processing:** Powered by the 32-bit ARM Cortex-M3 (STM32) for faster reaction times compared to standard Arduino boards.
-* **Maze Solving Algorithm:** Implements the Left-Hand Rule to navigate and solve 90-degree mazes.
-* **Path Optimization:** Records turns during the initial run to allow a more efficient second traversal.
-* **Precision Motor Control:** Uses the TB6612FNG driver for efficient and granular control of DC motors.
-* **8-Sensor Array:** RLS08 array allows for smooth line following using weighted averages or PID control.
+![MCU](https://img.shields.io/badge/MCU-STM32F103C8T6-0066A1?style=for-the-badge) ![Firmware](https://img.shields.io/badge/Firmware-Arduino_C++-00878F?style=for-the-badge) ![Status](https://img.shields.io/badge/Status-Active_Prototype-orange?style=for-the-badge)
 
-## Hardware Components
+A compact, custom-built robot that follows lines, explores mazes and simplifies recorded turn sequences for a subsequent run.
 
-Here is the list of materials used in this project:
+[Hardware](#hardware) · [How it works](#how-it-works) · [Setup](#getting-started) · [Troubleshooting](docs/TROUBLESHOOTING.md)
 
-* **Microcontroller:** STM32 model STM32F103C8T6 "Blue Pill"
-* **Power:** Buck Converter  to step down the voltage.
-* **Motor Driver:** TB6612FNG Dual Motor Driver
-* **Motors:** 2x DC geared motors with Encoder (N20 motors with 300rpm)
-* **Sensors:** RLS08 IR Sensor
-* **Chassis:** 2WD PCB cutout chassis
-* **Wheels:** 2x wheels and 2x caster wheels
-* **Battery:** 2x Rechargable 600mAh 3.7V Batteries
-* **Switch:** 1x regular on and off switch
+</div>
 
-## Circuit & Wiring (Need not to be exactly same as here)
+---
 
-Understanding the connections is crucial for replication. Below is the pin mapping used.
+## Overview
 
-![Schematics Image](images_videos/Schematics%20Image.jpeg)
+**Meshmerize** is a differential-drive maze-solving robot powered by an STM32F103C8T6 Blue Pill, RLS08 eight-channel IR reflectance array, TB6612FNG motor driver and two encoder-equipped N20 motors. The firmware combines line-position feedback, PID-style steering, left-hand-rule maze exploration and route simplification.
 
-1. Sensor Array to STM32
-    * Sensors 1-8 (Digital/Analog Out): Connected to Pins PA7 through PA0.
-    * VCC/GND: Connected to 3.3V/GND respectively from the Blue Pill.
-
-2. Motor Driver (TB6612FNG) to STM32
-Connects to the STM32 to control speed (PWM) and direction (Logic High/Low).
-
-* Motor A (Right Motor)
-    * PWM Speed: PB6
-    * Input 1: PB12
-    * Input 2: PB13
-
-* Motor B (Left Motor)
-    * PWM Speed: PB7
-    * Input 1: PB14
-    * Input 2: PB15
-
-* Driver Power & Logic
-    * STBY: Connect to 3.3V (Keeps driver enabled).
-    * VM: Connect to Battery (+) via Switch.
-    * VCC: Connect to 3.3V.
-    * GND: Connect to Common Ground.
-
-3. Encoders to STM32
-Used for measuring distance and precise turns.
-    * Left Encoder (A): PB10
-    * Right Encoder (A): PB5
-
-4. User Interface
-Used for status indication and initiating calibration.
-    * User Button: PA0 (Used to start/stop or trigger calibration).
-    * Status LED: PB2 (Indicates robot state).
-    * Goal LED: PB11 (Indicates when the maze is solved).
-
-*(Note: Adjust pin numbers in config.h if your wiring differs.)*
-
-## The Logic: How It Works
-
-1. Line Detection
-
-The robot uses 8 IR sensors.
-* White surface: Reflects IR light → Sensor reads HIGH (1).
-* Black line: Absorbs IR light → Sensor reads LOW (0).
-* By reading the position of the active sensors, the robot calculates an "Error Value" (how far off-center it is).
-
-2. The Left-Hand Rule (LSR)
-
-This is a left-wall-following algorithm used to solve mazes:
-* Priority Left: If a left turn is available, take it.
-* Straight: If no left turn, but straight is available, go straight.
-* Right: If no left or straight, turn right.
-* Dead End: If no paths are available, turn around (U-turn).
-
-The robot stores the turns encountered during the first run and uses them to make a more efficient second traversal.
-
-> **Current limitation:** The current implementation does not guarantee the globally shortest path through the maze. Future versions could use graph-based path-planning algorithms to find an optimal route.
-
-## Software & Setup
-
-The project is coded in C++ using the **Arduino IDE**.
-
-### Prerequisites:
-
-1. Arduino IDE: Download and install.
-2. STM32 Board Manager:
-    * Go to 'File > Preferences(Settings)'.
-    * Add this URL to "Additional Boards Manager URLs": http://dan.drown.org/stm32duino/package_STM32duino_index.json
-    * Go to 'Tools > Board > Boards Manager', search for "STM32", and install.
-
-## Installation:
-
-1. Clone this repository by pasting the given command in your terminal or gitbash 
-```bash 
-git clone https://github.com/XDecoder12/stm32-maze-solving-robot.git
-```
-2. Open just_code.ino in Arduino IDE
-3. Board Settings:
-    * Board: Generic STM32F1 series
-    * Part Number: BluePill F103C8
-    * Upload Method: STLink (if using dongle) or Serial (if using FTDI).
-4. Connect your STM32 and hit Upload.
-
-## Calibration & Tuning
-
-Before running the maze, you must calibrate the sensors for your specific environment (lighting conditions).
-
-1. Sensor Threshold: Edit config.h to set the black/white threshold values.
-2. PID Tuning (if applicable):
-    * Increase Kp (Proportional) until the robot oscillates slightly.
-    * Increase Kd (Derivative) to dampen the oscillation.
-    * Set Ki (Integral) to 0 (usually not needed for line following).
-
-*Tip: Ensure your battery is fully charged. Lower voltage can affect sensor accuracy and motor torque.*
+> **Prototype status:** The robot follows white vinyl tape on black chart paper more reliably than a fully printed vinyl maze. The printed-material tracking issue remains under investigation. This documentation refresh does not claim to fix it.
 
 ## Gallery
 
-![Top Image](images_videos/IMG_0701.png)
-![Bottom Image](images_videos/IMG_0703.png)
-![Side Image](images_videos/IMG_0704.png)
-![Demo Video](images_videos/demo_video.mov)
+<div align="center">
+<img src="images_videos/IMG_0701.png" alt="Top of Meshmerize robot" width="48%"> <img src="images_videos/IMG_0703.png" alt="Underside of Meshmerize robot" width="48%">
+</div>
+
+<p align="center"><img src="images_videos/IMG_0704.png" alt="Side of Meshmerize robot" width="70%"></p>
+
+[Demo video](images_videos/demo_video.mov) · [Wiring schematic](images_videos/Schematics%20Image.jpeg)
+
+## Hardware
+
+| Component | Specification |
+| --- | --- |
+| MCU | STM32F103C8T6 Blue Pill |
+| Sensors | RLS08 eight-channel infrared reflectance array |
+| Driver | TB6612FNG dual motor driver |
+| Motors | 2 × N20 geared DC motors, ~300 RPM, with encoders |
+| Power | 2 × rechargeable 3.7 V 600 mAh cells and buck converter |
+| Chassis | Custom 2WD cut perfboard, two drive wheels and two casters |
+
+### Pin mapping
+
+The following is taken from `code/Config.h` rather than the older approximate schematic notes.
+
+| Function | STM32 pins |
+| --- | --- |
+| Sensors 1–8 | PA1, PA2, PA3, PA4, PA5, PA6, PA7, PB0 |
+| Right motor IN1 / IN2 / PWM | PB12 / PB13 / PB6 |
+| Left motor IN1 / IN2 / PWM | PB14 / PB15 / PB7 |
+| Left / right encoder A | PB10 / PB5 |
+| Button | PA0 |
+| Status / goal LEDs | PB2 / PB11 |
+
+Verify actual supply voltages, ground connections and pin assignments before powering hardware.
+
+## How it works
+
+```mermaid
+flowchart TD
+  A[Read eight IR sensors] --> B[Estimate line position]
+  B --> C[Compute steering correction]
+  C --> D[Drive left and right motors]
+  D --> E{Junction or dead end?}
+  E -- No --> A
+  E -- Yes --> F[Select turn using left-hand priority]
+  F --> G[Record decision and turn using encoders]
+  G --> A
+```
+
+The initial traversal gives priority to left turns, then straight paths, then right turns, and reverses at dead ends. Recorded turns can be simplified for a later traversal. This is **not** a globally shortest-path guarantee for arbitrary mazes.
+
+## Repository layout
+
+```text
+stm32-maze-solving-robot/
+├── code/                 # Main firmware variant and Config.h
+├── just_code/            # Alternate firmware variant
+├── trial_code/           # Experimental firmware
+├── images_videos/        # Photos, schematic and demo
+├── docs/                 # Diagnostics and troubleshooting
+├── CONTRIBUTING.md
+└── README.md
+```
+
+These variants are not necessarily interchangeable. Confirm the corresponding configuration before flashing.
+
+## Getting started
+
+1. Install [Arduino IDE](https://www.arduino.cc/en/software) and a suitable [STM32 Arduino core](https://github.com/stm32duino/Arduino_Core_STM32).
+2. Clone this repository:
+
+   ```bash
+   git clone https://github.com/XDecoder12/stm32-maze-solving-robot.git
+   cd stm32-maze-solving-robot
+   ```
+
+3. Open `code/code.ino` with its companion `code/Config.h` in the same sketch folder. On case-sensitive systems, match the header filename casing to `#include "config.h"`.
+4. Choose the STM32F103C8T6 board and an upload method supported by your hardware.
+5. Check wiring and voltage levels; test motor directions with wheels lifted before running on the track.
+
+Exact board settings depend on the installed STM32 core version; a reproducible pinned build is not yet provided.
+
+## Calibration and tuning
+
+The main sketch appears to initialize `sensor_min` to 0 and `sensor_max` to 4095, which can prevent calibration extrema updates for a normal 12-bit ADC. This is a **suspected firmware defect, not a verified fix**. Compare raw black/white sensor values before retuning PID for new materials.
+
+Read the [troubleshooting guide](docs/TROUBLESHOOTING.md) for a structured test procedure.
 
 ## Contributing
 
-Contributions are welcome! If you have a better maze-solving algorithm or hardware optimization:
-    * Fork the Project.
-    * Create your Feature Branch.
-    * Commit your Changes.
-    * Open a Pull Request.
+Bug reports, reproducible sensor logs, documentation improvements and firmware changes are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). State whether proposed firmware changes were physically tested.

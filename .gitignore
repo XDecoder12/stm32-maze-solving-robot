@@ -1,5 +1,14 @@
 .DS_Store
-*.swp
-*.swo
+Thumbs.db
 .vscode/
 .idea/
+*.swp
+build/
+.pio/
+*.elf
+*.hex
+*.bin
+*.map
+*.o
+*.d
+*.log

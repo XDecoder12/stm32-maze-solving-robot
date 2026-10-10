@@ -9,7 +9,7 @@
 
 A compact, custom-built robot that follows lines, explores mazes and simplifies recorded turn sequences for a subsequent run.
 
-[Hardware](#hardware) · [How it works](#how-it-works) · [Setup](#getting-started) · [Troubleshooting](docs/TROUBLESHOOTING.md)
+[Hardware](#hardware) · [Architecture](docs/ARCHITECTURE.md) · [How it works](#how-it-works) · [Setup](#getting-started) · [Troubleshooting](docs/TROUBLESHOOTING.md)
 
 </div>
 
